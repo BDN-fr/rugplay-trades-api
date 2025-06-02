@@ -224,7 +224,6 @@ function WebsocketConnect() {
     if (reconnectWebsocket) {
       setTimeout(WebsocketConnect, 5 * 1000);
     }
-    ws.open();
   });
 }
 

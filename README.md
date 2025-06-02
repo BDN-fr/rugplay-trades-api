@@ -15,7 +15,8 @@ Follow these steps to install and set up CurrencyMontior:
 
 ## Config
 
-`coin` : Your coin symbol.</br>
+`coin` : Your coin symbol. Alternativally you can use coins to use multiple coins.</br>
+`coins` : Your coin symbols (can by multiple, follow example).</br>
 `webhooks` : Your Discord webhooks.</br>
 `webhooks.value` : Discord webhook to send the latest coin value.</br>
 `webhooks.transactions` : Discord webhook to send the latest transactions.</br>
