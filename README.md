@@ -8,7 +8,7 @@ Follow these steps to install and set up CurrencyMontior:
 1. Clone this respository, or download and unpack it as a zip.
 2. Ensure you have Node.js installed.
 3. Install the projct dependencies (only `ws`).
-4. Copy `config.example.json` as `config.json` in your favourite code or text editor.
+4. Copy `config.example.json` as `config.json` and edit it in your favourite code or text editor.
 5. Edit the config to fit your needs
 6. Save your changes, run `index.js` and enjoy!
 
