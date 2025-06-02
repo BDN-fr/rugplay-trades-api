@@ -1,4 +1,5 @@
 # CurrencyMonitor
+
 A program for RugPlay which automatically monitors the value of a currency, along with the transactions occuring in it.
 
 Note: CurrencyMonitor has only been tested with Bun, but Node.js will almost definately work.
@@ -14,10 +15,10 @@ Follow these steps to install and set up CurrencyMontior:
 
 ## Config
 
-`coin` : put your coin symbol
-`webhooks` : discord webhooks
-`webhooks.value` : Discord webhook to send the latest coin value
-`webhooks.transactions` : Discord webhook to send the latest transactions
-`cookies` : Get your cookies from your browser, ensure you have both your authorisation cookie, and your Cloudflare clearance cookie.
-`role` : role that will be mentionned then transactions are over `mention_threshold`
-`mention_threshold` : the amount of money of a transaction that the mention is added to the webhook message
+`coin` : Your coin symbol.</br>
+`webhooks` : Your Discord webhooks.</br>
+`webhooks.value` : Discord webhook to send the latest coin value.</br>
+`webhooks.transactions` : Discord webhook to send the latest transactions.</br>
+`cookies` : Get your cookies from your browser, ensure you have both your authorisation cookie, and your Cloudflare clearance cookie.</br>
+`role` : Role that will be mentionned if the transaction is over `mention_threshold`.</br>
+`mention_threshold` : The threshold for when `role` should be pinged, any transactions with a value over this will contain a ping.</br>
