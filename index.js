@@ -26,7 +26,7 @@ async function FireWebhook(webhookUrl, content, options = {}, content2 = null) {
     }
     if (options.footer) {
       embed.footer = {
-        text: options.footer,
+        text: "CurrencyMonitor • https://github.com/ItsThatOneJack-Dev/CurrencyMonitor",
       };
     }
     const response = await fetch(webhookUrl, {
@@ -108,7 +108,6 @@ function WebsocketMessage(data) {
               {
                 color: "green",
                 title: `\`${TransactionObject.amount}\` BOUGHT!`,
-                footer: "CurrencyMonitor - Shareable",
               },
               TransactionObject.totalValue >= config.mention_threshold
                 ? config.role
@@ -121,7 +120,6 @@ function WebsocketMessage(data) {
               {
                 color: "red",
                 title: `\`${TransactionObject.amount}\` SOLD!`,
-                footer: "CurrencyMonitor - Shareable",
               },
               TransactionObject.totalValue >= config.mention_threshold
                 ? config.role
@@ -142,7 +140,6 @@ function WebsocketMessage(data) {
             `${config.coin} is now worth $${MessageObject.currentPrice}`,
             {
               color: "purple",
-              footer: "CurrencyMonitor - Shareable",
               title: "PRICE UPDATE!",
             }
           );
