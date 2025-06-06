@@ -95,7 +95,7 @@ function WebsocketMessage(data) {
         //console.log(TransactionObject)
         let ACTION = TransactionObject.type == "BUY" ? "BOUGHT" : "SOLD";
         console.log(
-          `TRANSACTION MADE: ${TransactionObject.username} ${ACTION} ${TransactionObject.amount} ${TransactionObject.coinName} (${TransactionObject.coinSymbol}) worth $${TransactionObject.totalValue}`
+          `TRANSACTION MADE: ${TransactionObject.username} ${ACTION} ${TransactionObject.amount} ${TransactionObject.coinName} (${TransactionObject.coinSymbol}) worth $${TransactionObject.totalValue.toFixed(2)}`
         );
         if (
           config.coins.includes(TransactionObject.coinSymbol) &&
@@ -104,7 +104,7 @@ function WebsocketMessage(data) {
           if (ACTION == "BOUGHT") {
             FireWebhook(
               config.webhooks.transactions,
-              `\`${TransactionObject.username}\` bought \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue}`,
+              `\`${TransactionObject.username}\` bought \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue.toFixed(2)}`,
               {
                 color: "green",
                 title: `\`${TransactionObject.amount}\` BOUGHT!`,
@@ -116,7 +116,7 @@ function WebsocketMessage(data) {
           } else {
             FireWebhook(
               config.webhooks.transactions,
-              `\`${TransactionObject.username}\` sold \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue}`,
+              `\`${TransactionObject.username}\` sold \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue.toFixed(2)}`,
               {
                 color: "red",
                 title: `\`${TransactionObject.amount}\` SOLD!`,
