@@ -1,5 +1,10 @@
 # CurrencyMonitor
-
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://itoj.dev/embed/Wwatermark.png">
+  <source media="(prefers-color-scheme: light)" srcset="https://itoj.dev/embed/Bwatermark.png">
+  <img alt="ItsThatOneJack, Copyright, All Rights Reserved Unless Stated Otherwise. Follow the license!" src="https://itoj.dev/embed/Bwatermark.png">
+</picture>
+</br></br>
 A program for RugPlay which automatically monitors the value of a currency, along with the transactions occuring in it.
 
 Note: CurrencyMonitor has only been tested with Bun, but Node.js will almost definately work.
