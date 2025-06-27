@@ -1,5 +1,7 @@
 # Rugplay Trades API
-A program for [RugPlay](https://rugplay.com/) which log all the trades occuring and allow accessing it by using an API.
+A program for [Rugplay](https://rugplay.com/) which log all the trades occuring and allow accessing it by using an API.
+
+You can use the API at this URL : https://rugplay-trades-api.bdn-fr.xyz/
 
 ## Using the API
 <details>
@@ -61,5 +63,4 @@ Only BUY and SELL trades are logged, no transfer (because it's just not possible
 5. Access the API on http://localhost:3000/
 
 ## Thanks
-
-Thanks to [ItsThatOneJack-Dev](https://github.com/ItsThatOneJack-Dev/CurrencyMonitor) who made [CurrencyMonitor](https://github.com/ItsThatOneJack-Dev/CurrencyMonitor) for the websocket connection
+Thanks to [ItsThatOneJack-Dev](https://github.com/ItsThatOneJack-Dev) who made [CurrencyMonitor](https://github.com/ItsThatOneJack-Dev/CurrencyMonitor) for the websocket connection

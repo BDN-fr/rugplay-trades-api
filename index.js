@@ -4,6 +4,8 @@ const MaxTrades = 10000
 const WS = "wss://ws.rugplay.com/"; // Don't change!
 const Transactions = [];
 
+// Websocket trades logger / scrapper
+
 function AddTransaction(data) {
   var len = Transactions.push(data)
   if (len >= MaxTrades) {
@@ -126,6 +128,8 @@ process.on("SIGINT", function () {
   ws.close();
   process.exit(0);
 });
+
+// API web server
 
 const express = require('express');
 const app = express();
