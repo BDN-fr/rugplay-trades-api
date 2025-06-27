@@ -1,49 +1,13 @@
 const WebSocket = require("ws"); // Don't change!
-const crypto = require("crypto");
-let config = undefined;
-try {
-  config = require("./config.json");
-  if (!config.coins) {
-    config.coins = [config.coin];
-  }
-} catch (error) {
-  console.error("Error loading config.json", error);
-  return;
-}
 
+const MaxTrades = 10000
 const WS = "wss://ws.rugplay.com/"; // Don't change!
-const HashMap = new Map();
+const Transactions = [];
 
-async function FireWebhook(webhookUrl, content, options = {}, content2 = null) {
-  const colors = { red: 0xff0000, green: 0x00ff00, purple: 0x800080 };
-  try {
-    const embed = {
-      description: content,
-      color: colors[options.color] || colors.green,
-    };
-    if (options.title) {
-      embed.title = options.title;
-    }
-    if (options.footer) {
-      embed.footer = {
-        text: "CurrencyMonitor • https://github.com/ItsThatOneJack-Dev/CurrencyMonitor",
-      };
-    }
-    const response = await fetch(webhookUrl, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        content: content2,
-        embeds: [embed],
-      }),
-    });
-    if (!response.ok) {
-      console.error("Failed to send message:", response.status);
-    }
-  } catch (error) {
-    console.error("Error:", error);
+function AddTransaction(data) {
+  var len = Transactions.push(data)
+  if (len >= MaxTrades) {
+    Transactions.shift()
   }
 }
 
@@ -51,100 +15,31 @@ function WebsocketOpen() {
   console.log("Connected.");
   console.log("Subscribing...\n");
   let subscriptions = [
-    { type: "subscribe", channel: "tradesall" },
-    { type: "subscribe", channel: "tradeslarge" },
+    { type: "subscribe", channel: "trades:all"},
+    {type: "set_coin", coinSymbol: "@global"}
   ];
-  config.coins.forEach((coin) => {
-    subscriptions.push({ type: "set_coin", coinSymbol: coin.toLowerCase() });
-    subscriptions.push({ type: "set_coin", coinSymbol: coin });
-  });
-
   subscriptions.forEach((sub, index) => {
     const message = JSON.stringify(sub);
     ws.send(message);
     console.log(`Subscribed: ${index + 1}:`, message);
   });
-  console.log(
-    `\nMonitoriting ${config.coins.join(", ")} price and transactions...\n`
-  );
 }
 
 function WebsocketMessage(data) {
   const messageStr = data.toString("utf8");
   try {
     const MessageObject = JSON.parse(messageStr);
-    const messageHashRaw = MessageObject.data
-      ? JSON.stringify(MessageObject.data)
-      : Date.now().toString();
-    const messageHash = crypto
-      .createHash("md5")
-      .update(messageHashRaw)
-      .digest("hex");
-    if (!HashMap.has(messageHash)) {
-      HashMap.set(messageHash, Date.now());
+    if (MessageObject.type === "ping") {
+      console.log(">>> PING");
+      const pongResponse = JSON.stringify({ type: "pong" });
+      ws.send(pongResponse);
+      console.log("<<< PONG");
+    } else if (
+      MessageObject.type === "all-trades"
+    ) {
       const TransactionObject = MessageObject.data;
-      if (MessageObject.type === "ping") {
-        console.log(">>> PING");
-        const pongResponse = JSON.stringify({ type: "pong" });
-        ws.send(pongResponse);
-        console.log("<<< PONG");
-      } else if (
-        MessageObject.type === "all-trades" ||
-        MessageObject.type === "live-trade"
-      ) {
-        //console.log(TransactionObject)
-        let ACTION = TransactionObject.type == "BUY" ? "BOUGHT" : "SOLD";
-        console.log(
-          `TRANSACTION MADE: ${TransactionObject.username} ${ACTION} ${TransactionObject.amount} ${TransactionObject.coinName} (${TransactionObject.coinSymbol}) worth $${TransactionObject.totalValue.toFixed(2)}`
-        );
-        if (
-          config.coins.includes(TransactionObject.coinSymbol) &&
-          config.webhooks.transactions
-        ) {
-          if (ACTION == "BOUGHT") {
-            FireWebhook(
-              config.webhooks.transactions,
-              `\`${TransactionObject.username}\` bought \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue.toFixed(2)}`,
-              {
-                color: "green",
-                title: `\`${TransactionObject.amount}\` BOUGHT!`,
-              },
-              TransactionObject.totalValue >= config.mention_threshold
-                ? config.role
-                : null
-            );
-          } else {
-            FireWebhook(
-              config.webhooks.transactions,
-              `\`${TransactionObject.username}\` sold \`${TransactionObject.amount}\` ${TransactionObject.coinSymbol} for $${TransactionObject.totalValue.toFixed(2)}`,
-              {
-                color: "red",
-                title: `\`${TransactionObject.amount}\` SOLD!`,
-              },
-              TransactionObject.totalValue >= config.mention_threshold
-                ? config.role
-                : null
-            );
-          }
-        }
-      } else if (MessageObject.type == "price_update") {
-        if (
-          config.coins.includes(TransactionObject.coinSymbol) &&
-          config.webhooks.value
-        ) {
-          console.log(
-            `${config.coin} PRICE UPDATE: ${MessageObject.currentPrice}/coin`
-          );
-          FireWebhook(
-            config.webhooks.value,
-            `${config.coin} is now worth $${MessageObject.currentPrice}`,
-            {
-              color: "purple",
-              title: "PRICE UPDATE!",
-            }
-          );
-        }
-      }
+      AddTransaction(TransactionObject)
+      console.log(TransactionObject)
     }
   } catch (error) {
     console.log("ERROR! [JSON PARSE FAILIURE]:", error.message, messageStr);
@@ -155,7 +50,6 @@ let reconnectWebsocket = true;
 function WebsocketConnect() {
   ws = new WebSocket(WS, {
     headers: {
-      Cookie: config.cookies,
       "User-Agent":
         "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
       Origin: "https://rugplay.com",
@@ -233,15 +127,40 @@ process.on("SIGINT", function () {
   process.exit(0);
 });
 
-setInterval(function () {
-  let deletedHashes = 0;
-  for (const [key, value] of HashMap.entries()) {
-    if (value > Date.now() + 60 * 1000) {
-      HashMap.delete(key);
-      deletedHashes = deletedHashes + 1;
+const express = require('express');
+const app = express();
+const port = 3000;
+
+['/', '/api'].forEach(path => {
+  app.get(path, (req, res) => {
+    res.redirect('https://github.com/BDN-fr/rugplay-trades-api')
+  })
+});
+
+app.get('/api/last{/:amount}', (req, res) => {
+  var amount = parseInt(req.params.amount)
+  var trades = Transactions
+  if (amount >= trades.length) {
+    res.json(trades);
+  }
+  res.json(trades.slice(-amount));
+});
+
+app.get('/api/coin/:coin{/:amount}', (req, res) => {
+  var coin = req.params.coin
+  var amount = parseInt(req.params.amount)
+  var trades = [];
+  Transactions.forEach(trade => {
+    if (trade.coinSymbol === coin) {
+      trades.push(trade)
     }
+  });
+  if (amount >= trades.length) {
+    res.json(trades);
   }
-  if (deletedHashes) {
-    console.log(`Deleted ${deletedHashes} hashes`);
-  }
-}, 5 * 60 * 1000);
+  res.json(trades.slice(-amount));
+});
+
+app.listen(port, () => {
+  console.log(`Server listening at http://localhost:${port}`);
+});

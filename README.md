@@ -1,30 +1,65 @@
-# CurrencyMonitor
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://itoj.dev/embed/Wwatermark.png">
-  <source media="(prefers-color-scheme: light)" srcset="https://itoj.dev/embed/Bwatermark.png">
-  <img alt="ItsThatOneJack, Copyright, All Rights Reserved Unless Stated Otherwise. Follow the license!" src="https://itoj.dev/embed/Bwatermark.png">
-</picture>
-</br></br>
-A program for RugPlay which automatically monitors the value of a currency, along with the transactions occuring in it.
+# Rugplay Trades API
+A program for [RugPlay](https://rugplay.com/) which log all the trades occuring and allow accessing it by using an API.
 
-Note: CurrencyMonitor has only been tested with Bun, but Node.js will almost definately work.
+## Using the API
+<details>
+<summary>Getting the last trades</summary>
 
-## Installation and use.
-Follow these steps to install and set up CurrencyMontior:
-1. Clone this respository, or download and unpack it as a zip.
-2. Ensure you have Node.js installed.
-3. Install the projct dependencies (only `ws`).
-4. Copy `config.example.json` as `config.json` and edit it in your favourite code or text editor.
-5. Edit the config to fit your needs
-6. Save your changes, run `index.js` and enjoy!
+`/api/last/?[amount]`  
+Returns the last trades  
+The *amount* parameter is optional, if it's not given, it will return all the last trades (max 10,000)
 
-## Config
+> Example  
+> `/api/last/2000` will return the last 2,000 trades (if there is 2,000 trades)
 
-`coin` : Your coin symbol. Alternativally you can use coins to use multiple coins.</br>
-`coins` : Your coin symbols (can by multiple, follow example).</br>
-`webhooks` : Your Discord webhooks.</br>
-`webhooks.value` : Discord webhook to send the latest coin value.</br>
-`webhooks.transactions` : Discord webhook to send the latest transactions.</br>
-`cookies` : Get your cookies from your browser, ensure you have both your authorisation cookie, and your Cloudflare clearance cookie.</br>
-`role` : Role that will be mentionned if the transaction is over `mention_threshold`.</br>
-`mention_threshold` : The threshold for when `role` should be pinged, any transactions with a value over this will contain a ping.</br>
+</details>
+
+<details>
+<summary>Getting the last trades of a coin</summary>
+
+`/api/coin/[coinSymbol]/?[amount]`  
+Returns the last trades of [coinSymbol]  
+The *amount* parameter is optional, if it's not given, it will return all the last trades
+
+> Example  
+> `/api/coin/CRINGE/50` will return the last 50 trades of *CRINGE (if there is 50 trades)
+
+</details>
+
+<details>
+<summary>Trade</summary>
+
+A trade is formed like this
+
+```json
+{
+    "type": "BUY",
+    "username": "bdn_fr",
+    "userImage": "avatars/4958.webp",
+    "amount": 165805.865648495,
+    "coinSymbol": "CRINGE",
+    "coinName": "CRINGE",
+    "coinIcon": "coins/cringe.webp",
+    "totalValue": 3000,
+    "price": 0.0185015099234272,
+    "timestamp": 1750989261632,
+    "userId": "4958"
+},
+```
+
+</details>
+
+---
+
+Only BUY and SELL trades are logged, no transfer (because it's just not possible)
+
+## Hosting the API
+1. Clone the repo
+2. Install node.js if you have'nt
+3. Install the dependencies with `npm install`
+4. Run index.js with `node index.js`
+5. Access the API on http://localhost:3000/
+
+## Thanks
+
+Thanks to [ItsThatOneJack-Dev](https://github.com/ItsThatOneJack-Dev/CurrencyMonitor) who made [CurrencyMonitor](https://github.com/ItsThatOneJack-Dev/CurrencyMonitor) for the websocket connection
